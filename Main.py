@@ -163,7 +163,7 @@ class MyWindow(Gtk.Window):
             self.show_message(response.message, 3, self.return_home)
 
     def on_logout_button_clicked(self, widget):
-        response = self.tcp_client.send_transfer(self.card_string)
+        response = self.tcp_client.send_logout(self.card_string)
         if response.type == ResponseType.OK:
             self.show_message(f"You have been logged out", 3, self.return_home)
         else:
