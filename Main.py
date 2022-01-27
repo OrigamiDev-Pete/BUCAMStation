@@ -1,26 +1,29 @@
+from TcpClient import ResponseType, TCPClient
 from gpiozero import LED
 from pyclbr import Function
+import sys
 import gi
-
-from OccupiedScreen import OccupiedScreen
-from TcpClient import ResponseType, TCPClient
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GLib
 
-from HomeScreen import HomeScreen
 
 class MyWindow(Gtk.Window):
     def __init__(self) -> None:
         super().__init__(title="Access")
 
-        self.station = "Chapel"
+        if len(sys.argv) == 2:
+            self.station = sys.argv[1]
+        else:
+            self.station = "Chapel"
+
         self.tcp_client = TCPClient("10.0.0.4", 13000, self.station)
         self.card_string = ""
         self.occupied = False
-        self.active = False    # True if terminal is in use. Stops cards from being scanned multiple times
+        # True if terminal is in use. Stops cards from being scanned multiple times
+        self.active = False
         self.is_fullscreen = False
         self.return_timeout = None
-        self.pin = LED(4) # Corresponds to GPIO4 aka pin 7
+        self.pin = LED(4)  # Corresponds to GPIO4 aka pin 7
 
         style_provider = Gtk.CssProvider()
         style_provider.load_from_data(open("style.css", "rb").read())
@@ -43,7 +46,8 @@ class MyWindow(Gtk.Window):
 
         ## Home Screen ##
 
-        self.home_screen = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        self.home_screen = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL, spacing=20)
 
         heading_label = Gtk.Label(label="Welcome to Blacktown Uniting Church")
 
@@ -74,7 +78,8 @@ class MyWindow(Gtk.Window):
 
         ## Occupied Screen ##
 
-        self.occupied_screen = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        self.occupied_screen = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL, spacing=20)
 
         self.current_user_label = Gtk.Label(label="")
 
@@ -84,7 +89,8 @@ class MyWindow(Gtk.Window):
         logout_button = Gtk.Button(label="Logout", name="logout-button")
         logout_button.connect("clicked", self.on_logout_button_clicked)
 
-        self.occupied_screen.pack_start(self.current_user_label, False, False, 10)
+        self.occupied_screen.pack_start(
+            self.current_user_label, False, False, 10)
         self.occupied_screen.pack_start(transfer_button, True, True, 0)
         self.occupied_screen.pack_start(logout_button, True, True, 0)
 
@@ -92,7 +98,8 @@ class MyWindow(Gtk.Window):
 
         ## Message Screen ##
 
-        self.message_screen = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        self.message_screen = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL, spacing=20)
         self.message_label = Gtk.Label(label="placeholder")
 
         self.stack.add_named(self.message_screen, "message")
@@ -110,13 +117,14 @@ class MyWindow(Gtk.Window):
     def show_message(self, message: str, delay: int, next: Function) -> None:
         self.message_label.set_label(message)
         self.stack.set_visible_child_name("message")
-        self.return_timeout = GLib.timeout_add_seconds(delay, self.on_transition_timeout, next)
+        self.return_timeout = GLib.timeout_add_seconds(
+            delay, self.on_transition_timeout, next)
 
     # def show_login_screen(self, message) -> None:
     #     self.welcome_label.set_label(f"Hi {message}!")
     #     self.stack.set_visible_child_name("unoccupied")
     #     self.return_timeout = GLib.timeout_add_seconds(10, self.on_transition_timeout, self.return_home)
-    
+
     def show_transfer_logout_screen(self, data) -> None:
         if data['owner']['Id'] == self.card_string:
             self.current_user_label.set_label("You own the building")
@@ -125,11 +133,12 @@ class MyWindow(Gtk.Window):
             self.current_user_label.set_label(f"{name} owns the building")
 
         self.stack.set_visible_child_name("occupied")
-        self.return_timeout = GLib.timeout_add_seconds(10, self.on_transition_timeout, self.return_home)
-    
+        self.return_timeout = GLib.timeout_add_seconds(
+            10, self.on_transition_timeout, self.return_home)
+
     def open_door(self, timeout) -> None:
         self.pin.on()
-        func = lambda self : self.pin.off()
+        def func(self): return self.pin.off()
         t = GLib.timeout_add_seconds(timeout, func, self)
 
     ## Events ##
@@ -137,14 +146,14 @@ class MyWindow(Gtk.Window):
     def on_transition_timeout(self, user_data) -> bool:
         user_data()
         return False
-    
+
     # def on_login_button_clicked(self, widget):
     #     response = self.tcp_client.send_login(self.card_string)
     #     if response.type == ResponseType.OK:
     #         self.show_message(f"You have been logged in", 3, self.return_home)
     #     else:
     #         self.show_message("Something went wrong", 3, self.return_home)
-    
+
     def on_transfer_button_clicked(self, widget):
         response = self.tcp_client.send_transfer(self.card_string)
         print(response.type)
@@ -161,13 +170,13 @@ class MyWindow(Gtk.Window):
             self.show_message("Something went wrong", 3, self.return_home)
 
     def on_key_pressed(self, widget, event):
-        if event.keyval == 65307: # Esc
+        if event.keyval == 65307:  # Esc
             if (self.is_fullscreen):
                 self.unfullscreen()
             else:
                 self.fullscreen()
-        if not self.active:        
-            if event.keyval == 65293: # Enter
+        if not self.active:
+            if event.keyval == 65293:  # Enter
                 self.active = True
                 response = self.tcp_client.send_access(self.card_string)
                 if response.type == ResponseType.OK:
@@ -177,10 +186,10 @@ class MyWindow(Gtk.Window):
                     self.show_message(response.message, 3, self.return_home)
             else:
                 self.card_string += event.string
-    
-    def on_window_state_changed(self, widget, event):
-        self.is_fullscreen = event.new_window_state & Gdk.WindowState.FULLSCREEN == Gdk.WindowState.FULLSCREEN # Checking the Gdk.WindowState flags if the window is fullscreen
 
+    def on_window_state_changed(self, widget, event):
+        # Checking the Gdk.WindowState flags if the window is fullscreen
+        self.is_fullscreen = event.new_window_state & Gdk.WindowState.FULLSCREEN == Gdk.WindowState.FULLSCREEN
 
 
 if __name__ == "__main__":

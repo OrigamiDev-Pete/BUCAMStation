@@ -3,17 +3,19 @@ import json
 import socket
 from tkinter import N
 
+
 class ResponseType(Enum):
     OK = 0
     BAD = 1
 
+
 class Response:
     def __init__(self, data: bytes):
 
-        self.type : ResponseType = None
-        self.data : dict = None
-        self.message : str = None
-        
+        self.type: ResponseType = None
+        self.data: dict = None
+        self.message: str = None
+
         data_string = data.decode("utf-8")
         json_data = json.loads(data_string)
 
@@ -21,10 +23,10 @@ class Response:
             self.type = ResponseType.OK
         else:
             self.type = ResponseType.BAD
-        
+
         self.data = json_data['data']
         self.message = json_data['message']
-    
+
     @staticmethod
     def timeout_response():
         return Response(b'{"status": "BAD", "message":"Could not connect to server", "data":{}}')
@@ -35,12 +37,13 @@ class RequestType(Enum):
     TRANSFER = 1
     LOGOUT = 2
 
+
 class Request:
     def __init__(self, type: RequestType, id: str, station: str):
         self.type = type.value
         self.id = id
         self.station = station
-    
+
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
@@ -68,7 +71,7 @@ class TCPClient:
             response = Response.timeout_response()
         finally:
             s.close()
-        
+
         return response
 
     def send_transfer(self, id: str) -> Response:
@@ -88,7 +91,7 @@ class TCPClient:
             response = Response.timeout_response()
         finally:
             s.close()
-        
+
         return response
 
     def send_logout(self, id: str) -> Response:
@@ -108,5 +111,5 @@ class TCPClient:
             response = Response.timeout_response()
         finally:
             s.close()
-        
+
         return response
