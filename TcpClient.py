@@ -19,17 +19,17 @@ class Response:
         data_string = data.decode("utf-8")
         json_data = json.loads(data_string)
 
-        if json_data['status'] == 'OK':
+        if json_data['Status'] == 0:
             self.type = ResponseType.OK
         else:
             self.type = ResponseType.BAD
 
-        self.data = json_data['data']
-        self.message = json_data['message']
+        self.data = json_data['Data']
+        self.message = json_data['Message']
 
     @staticmethod
     def timeout_response():
-        return Response(b'{"status": "BAD", "message":"Could not connect to server", "data":{}}')
+        return Response(b'{"Status": "BAD", "Message":"Could not connect to server", "Data":{}}')
 
 
 class RequestType(Enum):

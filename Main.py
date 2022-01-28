@@ -126,7 +126,7 @@ class MyWindow(Gtk.Window):
     #     self.return_timeout = GLib.timeout_add_seconds(10, self.on_transition_timeout, self.return_home)
 
     def show_transfer_logout_screen(self, data) -> None:
-        if data['owner']['Id'] == self.card_string:
+        if data['owner']['CardId'] == self.card_string:
             self.current_user_label.set_label("You own the building")
         else:
             name = data['owner']['FirstName']
@@ -156,7 +156,6 @@ class MyWindow(Gtk.Window):
 
     def on_transfer_button_clicked(self, widget):
         response = self.tcp_client.send_transfer(self.card_string)
-        print(response.type)
         if response.type == ResponseType.OK:
             self.show_message(f"Tranfer successful", 3, self.return_home)
         else:
