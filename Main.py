@@ -1,3 +1,4 @@
+#!/bin/python
 from TcpClient import ResponseType, TCPClient
 from gpiozero import LED
 from pyclbr import Function
