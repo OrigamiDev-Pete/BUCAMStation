@@ -27,7 +27,7 @@ class MyWindow(Gtk.Window):
         self.pin = LED(4)  # Corresponds to GPIO4 aka pin 7
 
         style_provider = Gtk.CssProvider()
-        style_provider.load_from_data(open("style.css", "rb").read())
+        style_provider.load_from_data(open("/home/pi/dev/BUCAMStation/style.css", "rb").read())
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
             style_provider,

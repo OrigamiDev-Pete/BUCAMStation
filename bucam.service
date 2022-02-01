@@ -1,0 +1,14 @@
+[Unit]
+Description=Start BUCAM
+
+[Service]
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStart=/usr/bin/python3 /home/pi/dev/BUCAMStation/Main.py
+Restart=on-failure
+RestartSec=10s
+KillMode=process
+TimeoutSec=infinity
+
+[Install]
+WantedBy=graphical.target
