@@ -29,7 +29,11 @@ class Response:
 
     @staticmethod
     def timeout_response():
-        return Response(b'{"Status": "BAD", "Message":"Could not connect to server", "Data":{}}')
+        return Response(b'{"Status": "BAD", "Message":"Connection Timeout", "Data":{}}')
+
+    @staticmethod
+    def refused_response():
+        return Response(b'{"Status": "BAD", "Message":"Connection Refused", "Data":{}}')
 
 
 class RequestType(Enum):
@@ -65,10 +69,12 @@ class TCPClient:
 
             s.sendall(bytes(req_json, "ASCII"))
 
-            data = s.recv(1024)
+            data = s.recv(2048)
             response = Response(data)
-        except:
+        except socket.timeout:
             response = Response.timeout_response()
+        except ConnectionRefusedError:
+            response = Response.refused_response()
         finally:
             s.close()
 
@@ -85,10 +91,12 @@ class TCPClient:
 
             s.sendall(bytes(req_json, "ASCII"))
 
-            data = s.recv(1024)
+            data = s.recv(2048)
             response = Response(data)
-        except:
+        except socket.timeout:
             response = Response.timeout_response()
+        except ConnectionRefusedError:
+            response = Response.refused_response()
         finally:
             s.close()
 
@@ -105,10 +113,12 @@ class TCPClient:
 
             s.sendall(bytes(req_json, "ASCII"))
 
-            data = s.recv(1024)
+            data = s.recv(2048)
             response = Response(data)
-        except:
+        except socket.timeout:
             response = Response.timeout_response()
+        except ConnectionRefusedError:
+            response = Response.refused_response()
         finally:
             s.close()
 

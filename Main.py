@@ -17,7 +17,7 @@ class MyWindow(Gtk.Window):
         else:
             self.station = "Chapel"
 
-        self.tcp_client = TCPClient("10.0.0.4", 13000, self.station)
+        self.tcp_client = TCPClient("10.0.0.17", 13000, self.station)
         self.card_string = ""
         self.occupied = False
         # True if terminal is in use. Stops cards from being scanned multiple times
@@ -63,20 +63,6 @@ class MyWindow(Gtk.Window):
 
         self.stack.add_named(self.home_screen, "home")
 
-        ## Unoccupied Screen ##
-
-        # self.unoccupied_screen = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
-
-        # self.welcome_label = Gtk.Label(label="Welcome ...")
-
-        # self.login_button = Gtk.Button(label="Login", name="login-button")
-        # self.login_button.connect("clicked", self.on_login_button_clicked)
-
-        # self.unoccupied_screen.pack_start(self.welcome_label, False, True, 10)
-        # self.unoccupied_screen.pack_start(self.login_button, True, True, 0)
-
-        # self.stack.add_named(self.unoccupied_screen, "unoccupied")
-
         ## Occupied Screen ##
 
         self.occupied_screen = Gtk.Box(
@@ -121,11 +107,6 @@ class MyWindow(Gtk.Window):
         self.return_timeout = GLib.timeout_add_seconds(
             delay, self.on_transition_timeout, next)
 
-    # def show_login_screen(self, message) -> None:
-    #     self.welcome_label.set_label(f"Hi {message}!")
-    #     self.stack.set_visible_child_name("unoccupied")
-    #     self.return_timeout = GLib.timeout_add_seconds(10, self.on_transition_timeout, self.return_home)
-
     def show_transfer_logout_screen(self, data) -> None:
         if data['owner']['CardId'] == self.card_string:
             self.current_user_label.set_label("You own the building")
@@ -147,13 +128,6 @@ class MyWindow(Gtk.Window):
     def on_transition_timeout(self, user_data) -> bool:
         user_data()
         return False
-
-    # def on_login_button_clicked(self, widget):
-    #     response = self.tcp_client.send_login(self.card_string)
-    #     if response.type == ResponseType.OK:
-    #         self.show_message(f"You have been logged in", 3, self.return_home)
-    #     else:
-    #         self.show_message("Something went wrong", 3, self.return_home)
 
     def on_transfer_button_clicked(self, widget):
         response = self.tcp_client.send_transfer(self.card_string)
