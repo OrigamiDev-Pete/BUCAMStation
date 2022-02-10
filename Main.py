@@ -178,6 +178,7 @@ if __name__ == "__main__":
     win = MyWindow()
     win.show_all()
     win.connect("destroy", Gtk.main_quit)
-    win.resize(1000, 400)
+    # win.resize(1000, 400)
+    win.fullscreen()
     win.set_focus(None)
     Gtk.main()
