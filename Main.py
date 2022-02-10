@@ -57,9 +57,14 @@ class MyWindow(Gtk.Window):
         spinner = Gtk.Spinner()
         spinner.start()
 
+        # debug button #
+        debug_button = Gtk.Button(label="Open Door", name="debug-button")
+        debug_button.connect("clicked", self.on_debug_button_pressed)
+
         self.home_screen.pack_start(heading_label, False, True, 10)
         self.home_screen.pack_start(scan_label, False, True, 10)
         self.home_screen.pack_start(spinner, True, True, 0)
+        self.home_screen.pack_start(debug_button, True, True, 0)
 
         self.stack.add_named(self.home_screen, "home")
 
@@ -124,6 +129,9 @@ class MyWindow(Gtk.Window):
         t = GLib.timeout_add_seconds(timeout, func, self)
 
     ## Events ##
+
+    def on_debug_button_pressed(self, widget):
+        self.open_door(5)
 
     def on_transition_timeout(self, user_data) -> bool:
         user_data()
