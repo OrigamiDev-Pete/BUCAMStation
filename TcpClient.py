@@ -75,6 +75,8 @@ class TCPClient:
             response = Response.timeout_response()
         except ConnectionRefusedError:
             response = Response.refused_response()
+        except OSError:
+            response = Response.refused_response()
         finally:
             s.close()
 
@@ -97,6 +99,8 @@ class TCPClient:
             response = Response.timeout_response()
         except ConnectionRefusedError:
             response = Response.refused_response()
+        except OSError:
+            response = Response.refused_response()
         finally:
             s.close()
 
@@ -118,6 +122,8 @@ class TCPClient:
         except socket.timeout:
             response = Response.timeout_response()
         except ConnectionRefusedError:
+            response = Response.refused_response()
+        except OSError:
             response = Response.refused_response()
         finally:
             s.close()
