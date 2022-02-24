@@ -140,7 +140,7 @@ class MyWindow(Gtk.Window):
     def on_transfer_button_clicked(self, widget):
         response = self.tcp_client.send_transfer(self.card_string)
         if response.type == ResponseType.OK:
-            self.show_message(f"Tranfer successful", 3, self.return_home)
+            self.show_message(f"Transfer successful", 3, self.return_home)
         else:
             self.show_message(response.message, 3, self.return_home)
 
