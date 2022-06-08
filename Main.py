@@ -17,7 +17,7 @@ class MyWindow(Gtk.Window):
         else:
             self.station = "Chapel"
 
-        self.tcp_client = TCPClient("10.0.0.17", 13000, self.station)
+        self.tcp_client = TCPClient("10.0.0.76", 13000, self.station)
         self.card_string = ""
         self.occupied = False
         # True if terminal is in use. Stops cards from being scanned multiple times
@@ -56,15 +56,23 @@ class MyWindow(Gtk.Window):
 
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
 
-        # spinner = Gtk.Spinner()
-        # spinner.start()
+        # Open Office Button #
+        if self.station == "Office":
+            open_office_button = Gtk.Button(label="Open Door", name="open-office-button")
+            open_office_button.connect("clicked", self.on_open_office_button_pressed)
 
-        # debug button #
-        # debug_button = Gtk.Button(label="Open Door", name="debug-button")
-        # debug_button.connect("clicked", self.on_debug_button_pressed)
+        help_button = Gtk.Button(label="Help", name="help-button")
+        help_button.connect("clicked", self.on_help_button_pressed)
 
         box.pack_start(heading_label, True, True, 0)
         box.pack_start(scan_label, True, True, 0)
+        if self.station == "Office":
+            box.pack_start(open_office_button, True, True, 0)
+
+        help_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, margin=20)
+        help_box.pack_end(help_button, False, False, 0)
+
+        self.home_screen.pack_end(help_box, False, False, 0)
         self.home_screen.pack_start(box, True, False, 0)
 
         self.stack.add_named(self.home_screen, "home")
@@ -131,7 +139,7 @@ class MyWindow(Gtk.Window):
 
     ## Events ##
 
-    def on_debug_button_pressed(self, widget):
+    def on_open_office_button_pressed(self, widget):
         self.open_door(5)
 
     def on_transition_timeout(self, user_data) -> bool:
@@ -151,6 +159,12 @@ class MyWindow(Gtk.Window):
             self.show_message(f"You have been logged out", 3, self.return_home)
         else:
             self.show_message("Something went wrong", 3, self.return_home)
+
+    def on_help_button_pressed(self, widget):
+        dialog = Gtk.MessageDialog(transient_for=self, flags=0, message_type=Gtk.MessageType.INFO, buttons=Gtk.ButtonsType.OK, text="For assistance, call Peter on 0458 495 484")
+        dialog.format_secondary_text("Please dismiss this dialog when you are finished.")
+        dialog.run()
+        dialog.destroy()
 
     def on_key_pressed(self, widget, event):
         if event.keyval == 65307:  # Esc
