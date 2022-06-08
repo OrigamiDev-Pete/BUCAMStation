@@ -23,7 +23,8 @@ class MyWindow(Gtk.Window):
         # True if terminal is in use. Stops cards from being scanned multiple times
         self.active = False
         self.is_fullscreen = False
-        self.return_timeout = None
+        self.return_timeout_transfer = None
+        self.return_timeout_message = None
         self.pin = LED(4)  # Corresponds to GPIO4 aka pin 7
 
         style_provider = Gtk.CssProvider()
@@ -114,12 +115,15 @@ class MyWindow(Gtk.Window):
         self.active = False
         self.card_string = ""
         self.stack.set_visible_child_name("home")
+        try:
+            GLib.source_remove(self.return_timeout_transfer)
+        except:
+            pass
 
     def show_message(self, message: str, delay: int, next: Function) -> None:
         self.message_label.set_label(message)
         self.stack.set_visible_child_name("message")
-        self.return_timeout = GLib.timeout_add_seconds(
-            delay, self.on_transition_timeout, next)
+        self.return_timeout_message = GLib.timeout_add_seconds(delay, self.on_transition_timeout, next)
 
     def show_transfer_logout_screen(self, data) -> None:
         if data['owner']['CardId'] == self.card_string:
@@ -129,8 +133,7 @@ class MyWindow(Gtk.Window):
             self.current_user_label.set_label(f"{name} owns the building")
 
         self.stack.set_visible_child_name("occupied")
-        self.return_timeout = GLib.timeout_add_seconds(
-            10, self.on_transition_timeout, self.return_home)
+        self.return_timeout_transfer = GLib.timeout_add_seconds(10, self.on_transition_timeout, self.return_home)
 
     def open_door(self, timeout) -> None:
         self.pin.on()

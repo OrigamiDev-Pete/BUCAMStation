@@ -62,8 +62,8 @@ class TCPClient:
         response = None
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
+            s.settimeout(1)
             s.connect((self.host_ip, self.port))
-            s.settimeout(5)
             request = Request(RequestType.ACCESS, id, self.station)
             req_json = request.toJSON()
 
@@ -86,8 +86,8 @@ class TCPClient:
         response = None
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
+            s.settimeout(1)
             s.connect((self.host_ip, self.port))
-            s.settimeout(5)
             request = Request(RequestType.TRANSFER, id, self.station)
             req_json = request.toJSON()
 
@@ -110,8 +110,8 @@ class TCPClient:
         response = None
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
+            s.settimeout(1)
             s.connect((self.host_ip, self.port))
-            s.settimeout(5)
             request = Request(RequestType.LOGOUT, id, self.station)
             req_json = request.toJSON()
 
