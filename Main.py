@@ -60,9 +60,11 @@ class MyWindow(Gtk.Window):
         # Open Office Button #
         if self.station == "Office":
             open_office_button = Gtk.Button(label="Open Door", name="open-office-button")
+            open_office_button.set_can_focus(False)
             open_office_button.connect("clicked", self.on_open_office_button_pressed)
 
         help_button = Gtk.Button(label="Help", name="help-button")
+        help_button.set_can_focus(False)
         help_button.connect("clicked", self.on_help_button_pressed)
 
         box.pack_start(heading_label, True, True, 0)
@@ -86,9 +88,11 @@ class MyWindow(Gtk.Window):
         self.current_user_label = Gtk.Label(label="")
 
         transfer_button = Gtk.Button(label="Transfer", name="transfer-button")
+        transfer_button.set_can_focus(False)
         transfer_button.connect("clicked", self.on_transfer_button_clicked)
 
         logout_button = Gtk.Button(label="Logout", name="logout-button")
+        logout_button.set_can_focus(False)
         logout_button.connect("clicked", self.on_logout_button_clicked)
 
         self.occupied_screen.pack_start(
