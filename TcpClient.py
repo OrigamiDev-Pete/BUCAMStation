@@ -1,7 +1,6 @@
 from enum import Enum
 import json
 import socket
-from tkinter import N
 
 
 class ResponseType(Enum):
